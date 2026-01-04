@@ -15,14 +15,14 @@ Single-page, browser-only helper that turns a user’s plate inventory into prin
 
 ## Core calculations
 - All dumbbells must be balanced: each side of a dumbbell uses identical plate stacks.
-- Single-dumbbell table: for every achievable total weight within range, pick the balanced combination using the fewest total plates (tie-break: heavier plates first). Show per-side stack (e.g., `16 kg => 1, 2, 5 kg each side`).
-- Two-dumbbell table: list all permutations where both dumbbells (A and B) are individually balanced and equal in total weight, using available plate counts. Show per-side stack per dumbbell (e.g., `12 kg each => A: 1, 2, 3 kg | B: 1, 1, 4 kg`).
+- Single-dumbbell table: show only achievable totals within range; for each, pick the balanced combination using the fewest total plates (tie-break: heavier plates first). Show per-side stack (e.g., `16 kg => 1, 2, 5 kg each side`).
+- Two-dumbbell table: show only achievable permutations where both dumbbells (A and B) are individually balanced and equal in total weight, using available plate counts. Show per-side stack per dumbbell (e.g., `12 kg each => A: 1, 2, 3 kg | B: 1, 1, 4 kg`).
 - Respect inventory counts across both dumbbells; avoid solutions that exceed available plates.
 - Indicate if a target weight is not achievable.
 
 ## Outputs
-- Table 1: Balanced single-dumbbell combos (one minimal-plate combo per total weight).
-- Table 2: Balanced two-dumbbell permutations (all valid combos per total weight).
+- Table 1: Balanced single-dumbbell combos (one minimal-plate combo per achievable total).
+- Table 2: Balanced two-dumbbell permutations (all valid achievable combos per total).
 - Sorted by total weight ascending; optionally collapsible sections by weight.
 - Print-friendly styling (monochrome-safe, minimal borders); support browser print to PDF.
 

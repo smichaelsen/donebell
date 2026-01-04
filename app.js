@@ -152,19 +152,21 @@ function pickBestCombo(combos) {
   }, null);
 }
 
-function renderSingleTable(weights, combosBySideWeight, minKg, maxKg) {
-  const rows = [];
-  for (let total = minKg; total <= maxKg; total += 1) {
+function renderSingleTable(weights, combosBySideWeight) {
+  const totals = Array.from(combosBySideWeight.keys())
+    .map((side) => side * 2)
+    .sort((a, b) => a - b);
+  if (!totals.length) {
+    singleTableBody.innerHTML = '<tr><td colspan="3" class="text-muted">No achievable weights in range.</td></tr>';
+    return;
+  }
+  const rows = totals.map((total) => {
     const side = total / 2;
-    const list = combosBySideWeight.get(side);
-    if (!list || !list.length) {
-      rows.push(`<tr><td>${total}</td><td colspan="2" class="text-muted">Not achievable</td></tr>`);
-      continue;
-    }
+    const list = combosBySideWeight.get(side) || [];
     const best = pickBestCombo(list);
     const platesUsed = best.platesPerSide * 2;
-    rows.push(`<tr><td>${total}</td><td class="stack">${formatStack(best.counts, weights)}</td><td>${platesUsed}</td></tr>`);
-  }
+    return `<tr><td>${total}</td><td class="stack">${formatStack(best.counts, weights)}</td><td>${platesUsed}</td></tr>`;
+  });
   singleTableBody.innerHTML = rows.join('');
 }
 
@@ -216,7 +218,7 @@ function onGenerate() {
     combosBySideWeight.get(key).push(c);
   });
 
-  renderSingleTable(weights, combosBySideWeight, minKg, maxKg);
+  renderSingleTable(weights, combosBySideWeight);
   renderPairTable(weights, combosBySideWeight, inventory, minKg, maxKg);
   setMessage('Tables updated.');
 }
