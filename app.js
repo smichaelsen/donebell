@@ -171,13 +171,18 @@ function renderSingleTable(weights, combosBySideWeight) {
 }
 
 function renderPairTable(weights, combosBySideWeight, inventory, minKg, maxKg) {
-  const rows = [];
   const qty = inventory.map((p) => p.quantity);
+  const totals = Array.from(combosBySideWeight.keys())
+    .map((side) => side * 2)
+    .filter((total) => total >= minKg && total <= maxKg)
+    .sort((a, b) => a - b);
 
-  for (let total = minKg; total <= maxKg; total += 1) {
+  const rows = [];
+  for (const total of totals) {
     const side = total / 2;
     const list = combosBySideWeight.get(side);
     if (!list || !list.length) continue;
+    let best = null;
     for (let i = 0; i < list.length; i += 1) {
       const a = list[i];
       for (let j = 0; j < list.length; j += 1) {
@@ -188,8 +193,14 @@ function renderPairTable(weights, combosBySideWeight, inventory, minKg, maxKg) {
         }
         if (!ok) continue;
         const platesUsed = 2 * (a.platesPerSide + b.platesPerSide);
-        rows.push(`<tr><td>${total}</td><td class="stack">${formatStack(a.counts, weights)}</td><td class="stack">${formatStack(b.counts, weights)}</td><td>${platesUsed}</td></tr>`);
+        const score = comboScore(a.counts) + comboScore(b.counts);
+        if (!best || platesUsed < best.platesUsed || (platesUsed === best.platesUsed && score > best.score)) {
+          best = { a, b, platesUsed, score };
+        }
       }
+    }
+    if (best) {
+      rows.push(`<tr><td>${total}</td><td class="stack">${formatStack(best.a.counts, weights)}</td><td class="stack">${formatStack(best.b.counts, weights)}</td><td>${best.platesUsed}</td></tr>`);
     }
   }
 
